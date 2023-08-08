@@ -1,16 +1,56 @@
+import {useEffect, useState} from 'react';
+import {Searchbar} from './searchbar/Searchbar';
+import {Button} from './button/Button';
+import {ImageGallery} from './imageGallery/ImageGallery';
+import {findImages} from '../appi';
+import {Loader} from './loader/Loader';
+
 export const App = () => {
+  const [isLoading, setIsLoading] = useState (false);
+  const [date, setDate] = useState ([]);
+  const [pag, setPag] = useState ('');
+  const [valueSab, setValuSab] = useState ('');
+  const [isError, setIsError] = useState ({isEr: false, messageEr: ''});
+
+  const changeValueSab = evt => {
+    if (evt === '') {
+      return;
+    }
+
+    setValuSab (evt);
+    setPag (1);
+  };
+  const changePage = () => {
+    return setPag (prevState => prevState + 1);
+  };
+  useEffect (
+    () => {
+      if (valueSab === '') {
+        return;
+      }
+      fechData ([valueSab], [pag]);
+    },
+    [pag]
+  );
+  const fechData = async (value, pag) => {
+    setIsLoading (true);
+    try {
+      const objimage = await findImages (value, pag);
+      setDate ([...date, ...objimage.data.hits]);
+    } catch (error) {
+      setIsError ({isEr: true, messageEr: error.message});
+    } finally {
+      return setIsLoading (false);
+    }
+  };
+
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
+    <div>
+
+      {isLoading ? <Loader /> : <Searchbar changeValueSab={changeValueSab} />}
+      <ImageGallery object={date} />
+      {isError.isEr ? <p class="error">{isError.messageEr}</p> : null}
+      {date.length !== 0 ? <Button pagChange={changePage} /> : null}
     </div>
   );
 };
