@@ -23,26 +23,30 @@ export const App = () => {
   const changePage = () => {
     return setPag (prevState => prevState + 1);
   };
+
+
   useEffect (
     () => {
       if (valueSab === '') {
         return;
       }
-      fechData ([valueSab], [pag]);
+      const fechData = async () => {
+        setIsLoading (true);
+        try {
+          const objimage = await findImages ([valueSab], [pag]);
+          setDate (date=>[...date,...objimage.data.hits]);
+        
+        } catch (error) {
+          setIsError ({isEr: true, messageEr: error.message});
+        } finally {
+          return setIsLoading (false);
+        }
+      };
+      fechData ();
     },
-    [pag]
+    [pag,valueSab]
   );
-  const fechData = async (value, pag) => {
-    setIsLoading (true);
-    try {
-      const objimage = await findImages (value, pag);
-      setDate ([...date, ...objimage.data.hits]);
-    } catch (error) {
-      setIsError ({isEr: true, messageEr: error.message});
-    } finally {
-      return setIsLoading (false);
-    }
-  };
+
 
   return (
     <div>
