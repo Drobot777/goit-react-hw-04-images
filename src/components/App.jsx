@@ -19,6 +19,7 @@ export const App = () => {
 
     setValuSab (evt);
     setPag (1);
+    setDate([]);
   };
   const changePage = () => {
     return setPag (prevState => prevState + 1);
