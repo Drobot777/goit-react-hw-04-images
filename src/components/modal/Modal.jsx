@@ -1,7 +1,10 @@
 import css from './Modal.module.css';
 import PropTypes from 'prop-types';
 export const Modal = ({url, alt, clouseFanction}) => {
-  const clouseModal = () => {
+  const clouseModal = (e) => {
+    if(e.target.nodeName==='IMG'){
+      return
+    }
     return clouseFanction ();
   };
 
